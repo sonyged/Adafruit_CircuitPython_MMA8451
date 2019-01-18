@@ -56,6 +56,8 @@ _MMA8451_REG_CTRL_REG2     = const(0x2B)
 _MMA8451_REG_CTRL_REG4     = const(0x2D)
 _MMA8451_REG_CTRL_REG5     = const(0x2E)
 _MMA8451_DATARATE_MASK     = const(0b111)
+_MMA8x5x_ID_8451           = const(0x1A)
+_MMA8x5x_ID_8653           = const(0x5A)
 _SENSORS_GRAVITY_EARTH     = 9.80665
 
 # External user-facing constants:
@@ -96,7 +98,8 @@ class MMA8451:
     def __init__(self, i2c, *, address=_MMA8451_DEFAULT_ADDRESS):
         self._device = i2c_device.I2CDevice(i2c, address)
         # Verify device ID.
-        if self._read_u8(_MMA8451_REG_WHOAMI) != 0x1A:
+        id = self._read_u8(_MMA8451_REG_WHOAMI)
+        if id != _MMA8x5x_ID_8451 and id != _MMA8x5x_ID_8653:
             raise RuntimeError('Failed to find MMA8451, check wiring!')
         # Reset and wait for chip to be ready.
         self._write_u8(_MMA8451_REG_CTRL_REG2, 0x40)
